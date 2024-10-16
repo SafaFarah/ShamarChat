@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import { create_token } from "../token.js";
+import { verify_token } from "../token.js";
 import User from "../models/user.js";
 
 export const router = express.Router();
@@ -83,6 +84,18 @@ router.post("/logout", (req, res) => {
     } catch (error) {
       console.error("Error during logout:", error);
       return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+router.get("/", verify_token, async (req, res) => {
+    try {
+        const chatUserId = req.user._id;
+        const users = await User.find({ _id: { $ne: chatUserId }}).select("-password");
+        res.status(200).json(users);
+
+    } catch (error) {
+      console.error("Error in get users: ", error.message);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
