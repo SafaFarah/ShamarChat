@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import bcrypt from "bcryptjs";
+import create_token from "../token.js";
 import User from "../models/user.js";
 
 const router = express.Router();
@@ -28,15 +29,20 @@ router.post("/signup", async (req, res) => {
             bio: "Tell us about yourself ...",
           });
 
-        await newUser.save();
-        
-        return res.status(201).json({
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            profilePicture: newUser.profilePicture,
-            bio: newUser.bio,
-          });
+        if(newUser) {
+            create_token(newUser._id, res);
+            await newUser.save();
+            return res.status(201).json({
+                _id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+                profilePicture: newUser.profilePicture,
+                bio: newUser.bio,
+              });
+        } else {
+            return res.status(400).json({ error: "invalid user's data" })
+        }
+
 
     } catch (error) {
         console.error("Error during signup: ", error.message);
