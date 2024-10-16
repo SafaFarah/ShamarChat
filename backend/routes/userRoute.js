@@ -50,13 +50,40 @@ router.post("/signup", async (req, res) => {
     }
 });
 
-router.post("/login", (req, res) => {
-    res.send("user login");
+router.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+
+        const isMatch = await bcrypt.compare(password, user.password || "");
+        if (!user || !isMatch) {
+            return res.status(400).json({ error: "Invalid username or password" });
+        }
+        create_token(user._id, res);
+        return res.status(200).json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+        profilePicture: user.profilePicture,
+        bio: user.bio,
+    });
+
+  } catch (error) {
+    console.error("Error during login: ", error.message);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 
 router.post("/logout", (req, res) => {
-    res.send("user logout");
-});
+    try {
+      res.cookie("jwt", "", {maxAge:0});
+      return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
 export default router;
