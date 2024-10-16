@@ -4,13 +4,10 @@ import userRoute from "./routes/userRoute.js";
 import connectToMangodb from "./mongoDb.js"
 
 const app = express();
-dotenv.config();
 const Port = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-    res.send("hello");
-});
-
+dotenv.config();
+app.use(express.json());
 app.use("/user", userRoute);
 
 

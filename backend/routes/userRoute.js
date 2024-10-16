@@ -1,12 +1,46 @@
-import express from "express";
+import express, { json } from "express";
+import bcrypt from "bcryptjs";
+import User from "../models/user.js";
 
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
     try {
         const {username, email, password, confirmpassword, gender} = req.body;
-    } catch (error) {
+        if(password !== confirmpassword) {
+            return res.status(400).json({ error: "Password don't match!" })
+        }
+
+        const user = await User.findOne({username});
+        if(user) {
+            return res.status(400).json({ error: "Username already exists" })
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const defaultProfilePicture = "../images/default_profile.png";
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            gender,
+            profilePicture: defaultProfilePicture,
+            bio: "Tell us about yourself ...",
+          });
+
+        await newUser.save();
         
+        return res.status(201).json({
+            _id: newUser._id,
+            username: newUser.username,
+            email: newUser.email,
+            profilePicture: newUser.profilePicture,
+            bio: newUser.bio,
+          });
+
+    } catch (error) {
+        console.error("Error during signup: ", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
