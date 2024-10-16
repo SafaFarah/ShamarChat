@@ -1,9 +1,9 @@
-import express, { json } from "express";
+import express from "express";
 import bcrypt from "bcryptjs";
-import create_token from "../token.js";
+import { create_token } from "../token.js";
 import User from "../models/user.js";
 
-const router = express.Router();
+export const router = express.Router();
 
 router.post("/signup", async (req, res) => {
     try {
@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
 
-        const isMatch = await bcrypt.compare(password, user.password || "");
+        const isMatch = await bcrypt.compare(password, user?.password || "");
         if (!user || !isMatch) {
             return res.status(400).json({ error: "Invalid username or password" });
         }
