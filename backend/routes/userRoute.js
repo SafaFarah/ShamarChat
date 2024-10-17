@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import bcrypt from "bcryptjs";
 import { create_token } from "../token.js";
 import { verify_token } from "../token.js";
@@ -54,12 +54,18 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log('rquesty:', { username, password });
         const user = await User.findOne({ username });
 
-        const isMatch = await bcrypt.compare(password, user?.password || "");
-        if (!user || !isMatch) {
+        if (!user) {
             return res.status(400).json({ error: "Invalid username or password" });
         }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: "Invalid username or password" });
+        }
+
         create_token(user._id, res);
         return res.status(200).json({
         _id: user._id,
