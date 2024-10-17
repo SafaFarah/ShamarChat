@@ -11,8 +11,8 @@ const Port = process.env.PORT || 5000;
 dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/user", userRoute);
-app.use("/message", messageRoute);
+app.use("/api/auth", userRoute);
+app.use("/api/messages", messageRoute);
 
 
 app.listen(Port, () => {
