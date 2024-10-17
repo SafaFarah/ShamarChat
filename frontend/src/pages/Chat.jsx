@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FaSearch, FaSignOutAlt, FaComments } from 'react-icons/fa';
+import logoutUse from "../hooks/logoutUse.js"
 
 const Chat = () => {
   const [selectedChat, setSelectedChat] = useState(null);
+  const { isLoading, logout } = logoutUse();
 
   const user = {
     username: 'User123',
@@ -51,9 +53,16 @@ const Chat = () => {
         </div>
 
         <button
+          onClick={logout}
           className="w-full bg-[#3e7857] text-white font-semibold py-2 rounded-full flex items-center justify-center hover:bg-[#285846] transition duration-300 mt-auto"
         >
-          <FaSignOutAlt className="mr-2" /> Logout
+          {!isLoading ? (
+            <>
+              <FaSignOutAlt className="mr-2" /> Logout
+            </>
+          ) : (
+            <span className="loading loading-spinner"></span>
+          )}
         </button>
       </div>
 
