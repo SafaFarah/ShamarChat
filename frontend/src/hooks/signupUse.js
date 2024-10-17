@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useAuthContext } from '../context/auth_context';
-
+import { use_context } from '../context/usercontext.jsx';
 
 const signupUse = () => {
+	const { setcurrentUser } = use_context();
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const { setCurrentUser } = useAuthContext();
 
     const signup = async ({ username, email, gender, password, confirmpassword }) => {
         const isValid = handleErrors({ username, email, gender, password, confirmpassword });
@@ -18,12 +17,12 @@ const signupUse = () => {
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify({ username, email, gender, password, confirmpassword })
             })
-			const data = await res.json();
-			if (data.error) {
+            const data = await res.json();
+            if (data.error) {
 				throw new Error(data.error);
 			}
-			localStorage.setItem("current-chat-user", JSON.stringify(data));
-			setCurrentUser(data);
+            localStorage.setItem("currentUser", JSON.stringify(data));
+			setcurrentUser(data);
 
         } catch (error) {
             setErrorMessage("Signup failed. Please try again.");

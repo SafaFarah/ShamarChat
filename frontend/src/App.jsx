@@ -6,13 +6,13 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
-import { useAuthContext } from './context/auth_context';
+import { use_context } from './context/usercontext';
 
 function App() {
-  const { currentUser } = useAuthContext();
+  const { currentUser} = use_context();
   return (
     <Routes>
-      <Route path='/' element={currentUser ? <Navigate to='/chat' /> : <Home />} />
+      <Route path="/" element={<Home />} />
       <Route path='/login' element={currentUser ? <Navigate to='/chat' /> : <Login />} />
       <Route path='/signup' element={currentUser ? <Navigate to='/chat' /> : <Signup />} />
       <Route path='/chat' element={currentUser ? <Chat /> : <Navigate to={"/login"} />} />
